@@ -106,3 +106,33 @@ The experiments dynamically generate synthetic graphs sized $n \in [100, 1000]$ 
 4. $\alpha(n) = n^{-1}$
 
 The generated plots will illustrate that while standard c-GCNs may struggle or exhibit scaling biases under extreme sparsity, the proposed unnormalized GWCN correctly converges to its generalized continuous limits across all tested sparse regimes.
+
+
+# 🎯 Part 3: Supplementary Performance Metrics (Cora Dataset)
+
+This section extends the transferability analysis by evaluating the real-world downstream utility of the pretrained models. Instead of solely relying on the L2 feature discrepancy, this module rigorously assesses Node Classification Accuracy, Macro-F1 Score, and Cross-Entropy Loss across varying subgraph sizes and sparsity schemes.
+
+## 📂 File Structure (Part 3)
+
+* `Test_acc_f1.py`: The comprehensive evaluation script. It samples subgraphs, runs the forward pass, and computes multiple downstream metrics (Transfer Error, Loss, Accuracy, Macro-F1) across multiple random trials. It rigorously records both the mean and standard deviation for statistical significance.
+* `Plot_acc_f1.py`: The visualization script. It parses the comprehensive metrics CSV and automatically generates four independent, publication-ready error-bar plots (one for each metric).
+
+## 🚀 How to Run
+
+Ensure you have already trained the base model using the scripts in Part 1 (e.g., `Stretched_GCN_train.py`). Then, run the following scripts sequentially to evaluate downstream metrics (e.g., for Cora, 3-layer, 64-hidden):
+
+**Step 1: Evaluate all metrics**
+> python Test_acc_f1.py --dataset Cora --num_layers 3 --hidden_channels 64
+
+*Output: A combined metrics dataset `Cora_Test_3_64_metrics.csv` containing means and standard deviations.*
+
+**Step 2: Generate Metric Plots**
+> python Plot_acc_f1.py --dataset Cora --num_layers 3 --hidden_channels 64
+
+*Output: 4 SCI-styled PDF figures (`Cora_plot_Accuracy_3_64.pdf`, `Cora_plot_F1Score_3_64.pdf`, `Cora_plot_Loss_3_64.pdf`, `Cora_plot_TransferError_3_64.pdf`).*
+
+## 🧠 Experimental Design
+
+While the unnormalized GWCN theoretically guarantees the convergence of the L2 representation error, it is crucial to empirically verify that this mathematical property translates to stable downstream task performance. 
+* **Robustness Evaluation:** The Macro-F1 Score is included alongside standard Accuracy to provide a robust evaluation metric, ensuring the model's performance remains stable even under potential class imbalances in the randomly sampled subgraphs.
+* **Statistical Significance:** Every point on the generated curves is averaged over multiple random trials (default: 50), with error bars representing the standard deviation. This confirms that the scaling stability across extreme sparsity ($\Theta(1/n)$) is a persistent structural property of the architecture, rather than an artifact of lucky sampling.
