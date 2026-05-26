@@ -17,7 +17,7 @@ This environment configuration is shared across the entire project. To ensure fu
 
 
 
-# Transfer Error (Cora, PubMed, OGBN-Arxiv)
+# Part 1: Transfer Error (Cora, PubMed, OGBN-Arxiv)
 
 This directory contains the core implementation for empirically validating the size transferability of Graph Convolutional Networks (GCNs) across varying sparsity schemes. It includes the complete pipeline for training, testing, and visualizing both the transfer errors and the empirical edge densities on three real-world datasets: Cora, PubMed, and OGBN-Arxiv.
 
@@ -63,3 +63,46 @@ During both the testing and density sampling phases, the model evaluates structu
 * **Scheme III**: $f(n) = \Theta(1)$ (Expected edge density remains constant)
 
 The generated plots will demonstrate that across all schemes, the transferability error consistently converges to zero as the graph size increases and expected edge density decreases, validating the theoretical upper bounds.
+
+
+
+# 📈 Part 2: Synthetic Experiment
+
+This section validates the continuous limit and convergence properties of standard c-GCNs versus the proposed Generalized Graphon Convolutional Networks (GWCN). The experiments are conducted on synthetic geometric random graphs dynamically generated via a Gaussian kernel.
+
+## 📂 File Structure (Part 2)
+
+* `models.py`: Defines the standard c-GCN architecture with symmetric Laplacian normalization (`MyGCN`).
+* `graph_utils.py`: Efficient utilities for generating nodes on a 3D surface and sampling edges via a Gaussian distance kernel.
+* `run_convergence.py`: Evaluates the convergence error of standard c-GCNs. It computes the continuous limit on a dense graph ($\alpha=1$) and measures discrepancies as graphs grow and become sparser.
+* `run_stretched_convergence.py`: Evaluates the proposed Stretched GWCN. It computes specific continuous limits for each sparsity scaling independently before measuring convergence errors.
+* `plot_convergence.py`: Reads the combined experimental results from both models and generates publication-ready plots.
+
+## 🚀 How to Run
+
+To reproduce the synthetic graph experiments, run the following scripts sequentially:
+
+**Step 1: Run standard c-GCN experiments**
+> python run_convergence.py
+
+*Output: `convergence_results_combined.csv`*
+
+**Step 2: Run Stretched GWCN experiments**
+> python run_stretched_convergence.py
+
+*Output: `stretched_convergence_results_combined.csv`*
+
+**Step 3: Generate Convergence Plots**
+> python plot_convergence.py
+
+*Output: 4 SCI-styled PDF figures (`fig_cGCN_Error.pdf`, `fig_cGCN_Density.pdf`, `fig_GWCN_Error.pdf`, `fig_GWCN_Density.pdf`).*
+
+## 🧠 Experimental Design
+
+The experiments dynamically generate synthetic graphs sized $n \in [100, 1000]$ and compare the finite graph model outputs against a large continuous limit approximation ($N=3000$). We evaluate the models under four distinct sparsity scaling schemes:
+1. $\alpha(n) = n^{-1/4}$
+2. $\alpha(n) = n^{-1/2}$
+3. $\alpha(n) = \log(n)/n$
+4. $\alpha(n) = n^{-1}$
+
+The generated plots will illustrate that while standard c-GCNs may struggle or exhibit scaling biases under extreme sparsity, the proposed unnormalized GWCN correctly converges to its generalized continuous limits across all tested sparse regimes.
